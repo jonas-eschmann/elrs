@@ -10,11 +10,9 @@ FT_GPS      = 0x02                     # GPS, etc. (example only)
 def _parse_linkstats(payload: bytes) -> str:
     if len(payload) != 10:
         return f"LinkStats invalid length {len(payload)}"
-    (rssi1_inv, rssi2_inv, lq_up, snr_up, ant, rf_mode,
-     txpwr, rssi_d_inv, lq_dn, snr_dn) = struct.unpack('<BBBBBBBbbb', payload)
-    return (f"LinkStat:  RSSI1={-rssi1_inv}dBm  RSSI2={-rssi2_inv}dBm  "
-            f"LQ={lq_up}%  SNR={snr_up}dB  RFmode={rf_mode}  TxPwrIdx={txpwr}  "
-            f"DownRSSI={-rssi_d_inv}dBm  DownLQ={lq_dn}%  DownSNR={snr_dn}dB")
+    data = {}
+    data["rssi1_inv"], data["rssi2_inv"], data["lq_up"], data["snr_up"], data["ant"], data["rf_mode"], data["txpwr"], data["rssi_d_inv"], data["lq_dn"], data["snr_dn"] = struct.unpack('<BBBBBBBbbb', payload)
+    return data
 
 
 def _parse_battery(payload: bytes) -> str:
@@ -39,8 +37,12 @@ def _parse_battery(payload: bytes) -> str:
     capacity = (cap_pack & 0xFFFFFF) / 1000.0 # amp-hours
     remain   = cap_pack >> 24                 # percent
 
-    return (f"Battery:  {voltage:.2f} V  {current:.2f} A  "
-            f"{capacity:.2f} Ah  {remain}%")
+    return {
+        "voltage" : voltage,
+        "current" : current,
+        "capacity": capacity,
+        "remain"  : remain
+    }
 
 # Map frame-type → decoder
 _DECODERS = {
