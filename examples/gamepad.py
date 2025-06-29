@@ -28,19 +28,22 @@ CFG_DIR = config_dir()
 CFG_DIR.mkdir(parents=True, exist_ok=True)
 MAPPING_FILE = CFG_DIR / "mapping.json"
 
-
 def wait_for_axis_movement(joystick: pygame.joystick.Joystick,
                            baseline: List[float],
                            prompt: str,
-                           thresh: float = 0.6) -> Dict:
-    """Block until one axis moves beyond *thresh* from its baseline."""
+                           thresh: float = 0.6,
+                           used_axes: set[int] | None = None) -> Dict:
+    if used_axes is None:
+        used_axes = set()
     print(prompt)
     sys.stdout.flush()
     axis_count = joystick.get_numaxes()
     while True:
         pygame.event.pump()
+        # Ignore axes we've already mapped
         diffs = [
-            joystick.get_axis(i) - baseline[i] for i in range(axis_count)
+            0.0 if i in used_axes else joystick.get_axis(i) - baseline[i]
+            for i in range(axis_count)
         ]
         idx, delta = max(enumerate(diffs), key=lambda x: abs(x[1]))
         if abs(delta) >= thresh:
@@ -66,21 +69,22 @@ def wait_for_button_press(joystick: pygame.joystick.Joystick,
 
 
 def calibrate(joystick: pygame.joystick.Joystick) -> Dict:
-    """Interactive calibration; returns mapping dict."""
     axis_mapping: List[Dict] = []
+    used_axes: set[int] = set()
     baseline = [joystick.get_axis(i) for i in range(joystick.get_numaxes())]
 
     for ch in range(CAL_CHANNELS):
-        axis_mapping.append(
-            wait_for_axis_movement(
-                joystick,
-                baseline,
-                f"\nMove the control you want to be **channel {ch}** fully "
-                "FORWARD / RIGHT (max positive) and hold…",
-            )
+        cfg = wait_for_axis_movement(
+            joystick,
+            baseline,
+            f"\nMove the control you want to be **channel {ch}** fully "
+            "FORWARD / RIGHT (max positive) and hold…",
+            used_axes=used_axes
         )
-        # update baseline so next iteration uses the current resting value
+        axis_mapping.append(cfg)
+        used_axes.add(cfg["index"])
         baseline = [joystick.get_axis(i) for i in range(joystick.get_numaxes())]
+
 
     taken_buttons = set()
     button_a = wait_for_button_press(
@@ -102,6 +106,8 @@ def calibrate(joystick: pygame.joystick.Joystick) -> Dict:
     }
     print("\nCalibration completed!\n")
     return mapping
+
+
 
 
 def load_or_calibrate(joystick, force_calibration: bool) -> Dict:
