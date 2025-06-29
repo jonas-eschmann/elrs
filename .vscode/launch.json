@@ -6,7 +6,13 @@
             "type": "debugpy",
             "request": "launch",
             "program": "examples/example.py",
-            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Gamepad",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "examples/gamepad.py",
             "console": "integratedTerminal"
         }
     ]
