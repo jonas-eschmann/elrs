@@ -30,6 +30,10 @@ async def async_main():
     p.add_argument("baud", nargs="?", type=int, default=921600, help="Baud rate (default 921600)")
     p.add_argument("--rate", type=float, default=50.0, help="Transmit rate in Hz (default 50)")
     p.add_argument("--ch", type=int, nargs="+", help="Up to 16 raw channel values (0-2047). Missing → 1024")
+    p.add_argument("--axes", type=str, nargs="+", default=["Roll", "Pitch", "Throttle", "Yaw"], help="Axes names in order. Default: ['Roll', 'Pitch', 'Throttle', 'Yaw'] (Betaflight default AETR)")
+    p.add_argument("--buttons", type=str, nargs="+", default=["arm"], help="Button names to map to channels. Default: ['arm']")
+    p.add_argument("--force", action="store_true", help="Force remapping of gamepad axes and buttons")
+
     args = p.parse_args()
 
     if args.ch is None:
@@ -43,7 +47,7 @@ async def async_main():
         joystick = pygame.joystick.Joystick(0)
         joystick.init()
 
-        mapping = load_or_map(joystick, ["Roll", "Pitch", "Throttle", "Yaw"], ["arm"], name="elrs")
+        mapping = load_or_map(joystick, args.axes, args.buttons, force=args.force, name="elrs")
 
         await elrs_loop(joystick, args.port, args.baud, mapping)
     else:
