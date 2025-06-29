@@ -9,11 +9,27 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Gamepad",
+            "name": "cli [gamepad]",
             "type": "debugpy",
             "request": "launch",
-            "program": "examples/gamepad.py",
-            "console": "integratedTerminal"
+            "module": "elrs.cli",
+            "console": "integratedTerminal",
+            "args": [
+                "/dev/ttyUSB0",
+                "921600"
+            ]
+        },
+        {
+            "name": "cli [argument]",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "elrs.cli",
+            "console": "integratedTerminal",
+            "args": [
+                "/dev/ttyUSB0",
+                "921600",
+                "--ch", "1337"
+            ]
         }
     ]
 }
