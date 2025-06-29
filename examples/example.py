@@ -1,7 +1,3 @@
-# ELRS Python Interface
-
-
-```python
 import asyncio
 from elrs import ELRS
 from datetime import datetime
@@ -28,4 +24,3 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
-```

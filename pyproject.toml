@@ -4,19 +4,20 @@ build-backend = "hatchling.build"
 
 [project]
 name = "elrs"
-version = "0.0.1"
+version = "0.0.3"
 description = "A Python interface for ExpressLRS"
 readme = "README.md"
 authors = [{name = "Jonas Eschmann", email = "jonas.eschmann@gmail.com"}]
 license = {text = "MIT"}
 dependencies = [
+    "pyserial"
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["elrs"]
 
 [project.scripts]
-elrs = "elrs.elrs:main"
+elrs = "elrs.cli:main"
 
 [project.urls]
 "Homepage" = "https://github.com/jonas-eschmann/elrs"
