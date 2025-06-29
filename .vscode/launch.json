@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ELRS",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "elrs/elrs.py",
+            "console": "integratedTerminal",
+            "args": [
+                "/dev/ttyUSB0",
+                "921600",
+                "--ch", "600"
+            ]
+        }
+    ]
+}
