@@ -15,11 +15,11 @@ async def main() -> None:
 
     asyncio.create_task(elrs.start())
 
-    value = 0
+    value = 1000
     while True:
         channels = [value] * 16
         elrs.set_channels(channels)
-        value = (value + 10) % 2048
+        value = (value + 1) % 2048
         await asyncio.sleep(0.1)
 
 if __name__ == "__main__":
