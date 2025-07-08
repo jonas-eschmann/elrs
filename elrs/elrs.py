@@ -21,7 +21,7 @@ RC_CHANNEL_MAX = 1811
 import asyncio
 
 class ELRS:
-    def __init__(self, port: str, baud: int = 921600, rate: float = 50.0, telemetry_callback=None):
+    def __init__(self, port: str, baud: int = 921600, rate: float = 50.0, telemetry_callback=None, verbose=False):
         self.NUM_CHANNELS = 16
         self.port = port
         self.baud = baud
@@ -29,6 +29,7 @@ class ELRS:
         self._running = False
         self.set_channels([])
         self.telemetry_callback = telemetry_callback
+        self.verbose = verbose
     
     def set_channels(self, input_channels: list[int]) -> bytes:
         input_channels = input_channels[:self.NUM_CHANNELS]
@@ -59,7 +60,7 @@ class ELRS:
                     for addr, ftype, payload in frames_from_bytes(ring):
                         if ftype in _DECODERS:
                             self.telemetry_callback(ftype, _DECODERS[ftype](payload)) if self.telemetry_callback else None
-                        else:
+                        elif self.verbose:
                             print(f"Unknown Frame Type 0x{ftype:02X} (len={len(payload)}) from 0x{addr:02X}")
                     await asyncio.sleep(period)
 
